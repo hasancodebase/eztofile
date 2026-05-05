@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import ImageConverter from '@/app/Converter/ImageConverter';
+import BatchImageConverter from '@/app/Converter/BatchImageConverter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Upload, FileText, Sparkles, SlidersHorizontal, PartyPopper, ArrowRight } from 'lucide-react';
 import type { ConversionOptions } from '@/app/Converter/converter-options';
@@ -9,6 +10,7 @@ import type { ConversionOptions } from '@/app/Converter/converter-options';
 export default function Home() {
   const [activeTab, setActiveTab] = useState('images');
   const [imagePreset, setImagePreset] = useState<ConversionOptions['format']>('webp');
+  const [imageMode, setImageMode] = useState<'single' | 'batch'>('single');
 
   return (
     <div className="surface-page text-foreground">
@@ -88,13 +90,49 @@ export default function Home() {
           </TabsList>
 
           <TabsContent value="images" className="mt-2 outline-none">
+            <div className="mb-6 flex items-center justify-center">
+              <div className="glass inline-flex rounded-2xl p-1.5">
+                <button
+                  type="button"
+                  onClick={() => setImageMode('single')}
+                  className={[
+                    'font-display rounded-xl px-4 py-2 text-base font-semibold transition-colors',
+                    imageMode === 'single'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-foreground hover:bg-muted',
+                  ].join(' ')}
+                >
+                  Single
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageMode('batch')}
+                  className={[
+                    'font-display rounded-xl px-4 py-2 text-base font-semibold transition-colors',
+                    imageMode === 'batch'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-foreground hover:bg-muted',
+                  ].join(' ')}
+                >
+                  Batch
+                </button>
+              </div>
+            </div>
+
+            {imageMode === 'batch' ? (
+              <div className="mb-10">
+                <BatchImageConverter />
+              </div>
+            ) : null}
+
             <div className="mb-8 grid gap-4 lg:grid-cols-2">
               <div className="glass rounded-3xl p-6 sm:p-8">
                 <h3 className="font-display text-xl font-bold text-foreground sm:text-2xl">
                   Popular image conversions
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                  Tap one to pre-select the output format, then upload your image.
+                  Tap one to pre-select the output format, then upload your image. Great for quick
+                  “jpg to webp”, “png to webp”, or “webp to jpg”.
                 </p>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">

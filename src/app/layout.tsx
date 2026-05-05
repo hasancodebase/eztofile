@@ -18,9 +18,9 @@ const display = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Eztofile — Simple image & file conversion',
+  title: 'Eztofile — Bulk image converter (JPG to WebP, PNG to WebP, WebP to JPG)',
   description:
-    'Resize pictures and change image formats in your browser. Clear steps, large controls, no account needed.',
+    'Bulk image converter to resize and convert JPG to WebP, PNG to WebP, and WebP to JPG. Batch process images and download as a ZIP — no signup.',
 };
 
 export default function RootLayout({
