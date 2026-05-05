@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import ImageConverter from '@/app/Converter/ImageConverter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, FileText, Sparkles, SlidersHorizontal, PartyPopper } from 'lucide-react';
+import { Upload, FileText, Sparkles, SlidersHorizontal, PartyPopper, ArrowRight } from 'lucide-react';
+import type { ConversionOptions } from '@/app/Converter/converter-options';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('images');
+  const [imagePreset, setImagePreset] = useState<ConversionOptions['format']>('webp');
 
   return (
     <div className="surface-page text-foreground">
@@ -26,7 +28,7 @@ export default function Home() {
         </p>
 
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Photos: JPG, PNG, or WebP · Up to about 20&nbsp;MB · Documents: more formats coming soon
+          Ready now: JPG/PNG/WebP → WebP/PNG/JPG · Documents: coming soon
         </p>
 
         <ol className="mx-auto mt-10 grid max-w-3xl gap-4 text-left sm:grid-cols-3 sm:gap-6">
@@ -86,21 +88,121 @@ export default function Home() {
           </TabsList>
 
           <TabsContent value="images" className="mt-2 outline-none">
-            <ImageConverter />
+            <div className="mb-8 grid gap-4 lg:grid-cols-2">
+              <div className="glass rounded-3xl p-6 sm:p-8">
+                <h3 className="font-display text-xl font-bold text-foreground sm:text-2xl">
+                  Popular image conversions
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  Tap one to pre-select the output format, then upload your image.
+                </p>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {[
+                    { from: 'JPG', to: 'WEBP', fmt: 'webp' as const },
+                    { from: 'PNG', to: 'WEBP', fmt: 'webp' as const },
+                    { from: 'WEBP', to: 'JPG', fmt: 'jpeg' as const },
+                    { from: 'PNG', to: 'JPG', fmt: 'jpeg' as const },
+                  ].map((p) => (
+                    <button
+                      key={`${p.from}-${p.to}`}
+                      type="button"
+                      onClick={() => setImagePreset(p.fmt)}
+                      className={[
+                        'group rounded-2xl border bg-card px-4 py-4 text-left shadow-sm transition-colors',
+                        'hover:bg-muted focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/60',
+                        imagePreset === p.fmt ? 'border-primary/40' : 'border-border',
+                      ].join(' ')}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="font-display text-base font-bold text-foreground">
+                          {p.from} <ArrowRight className="mx-1 inline size-4 text-muted-foreground" aria-hidden /> {p.to}
+                        </div>
+                        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                          Ready
+                        </span>
+                      </div>
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        Output will be <span className="font-semibold text-foreground">{p.to}</span>.
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="glass rounded-3xl p-6 sm:p-8">
+                <h3 className="font-display text-xl font-bold text-foreground sm:text-2xl">
+                  Coming soon
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  These are planned next. They are shown here so users know what Eztofile will support.
+                </p>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {[
+                    { title: 'PNG → Vector (SVG)', note: 'Planned' },
+                    { title: 'JPG → PNG', note: 'Planned' },
+                    { title: 'HEIC → JPG', note: 'Planned' },
+                    { title: 'Batch convert', note: 'Planned' },
+                  ].map((x) => (
+                    <div
+                      key={x.title}
+                      className="rounded-2xl border border-border bg-card/60 px-4 py-4 text-left opacity-70"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="font-display text-base font-bold text-foreground">{x.title}</div>
+                        <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+                          {x.note}
+                        </span>
+                      </div>
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        Not available yet.
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div id="converter" className="scroll-mt-28">
+              <ImageConverter key={imagePreset} defaultFormat={imagePreset} />
+            </div>
           </TabsContent>
 
           <TabsContent value="documents" className="outline-none">
-            <div className="glass mx-auto max-w-2xl rounded-3xl px-6 py-12 text-center sm:px-10 sm:py-16">
-              <h2 className="font-display mb-4 text-3xl font-bold text-foreground sm:text-4xl">
-                Documents are on the way
-              </h2>
-              <p className="mb-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                We are preparing simple ways to work with PDFs, Word files, and spreadsheets — the
-                same large buttons and plain language you see here.
-              </p>
-              <p className="text-base text-muted-foreground">
-                For now, the picture tools below are ready to use anytime.
-              </p>
+            <div className="glass mx-auto max-w-4xl rounded-3xl px-6 py-10 sm:px-10 sm:py-14">
+              <div className="text-center">
+                <h2 className="font-display mb-3 text-3xl font-bold text-foreground sm:text-4xl">
+                  Document converter (coming soon)
+                </h2>
+                <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                  We’re adding document tools next. Below are the planned conversions so it’s obvious what you’ll be able to do.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  { title: 'PDF → Word', desc: 'Turn a PDF into an editable document' },
+                  { title: 'Word → PDF', desc: 'Create a clean PDF for sharing/printing' },
+                  { title: 'Text → PDF', desc: 'Paste text and download as a PDF' },
+                  { title: 'PDF → Text', desc: 'Extract readable text from a PDF' },
+                  { title: 'Excel → PDF', desc: 'Export spreadsheets to PDF' },
+                  { title: 'Images → PDF', desc: 'Combine images into a single PDF' },
+                ].map((d) => (
+                  <div
+                    key={d.title}
+                    className="rounded-2xl border border-border bg-card/70 p-5 opacity-75"
+                    aria-disabled="true"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="font-display text-base font-bold text-foreground">{d.title}</div>
+                      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+                        Soon
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{d.desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </TabsContent>
         </Tabs>

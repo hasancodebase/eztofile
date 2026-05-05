@@ -14,7 +14,24 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export default function ImageConverter() {
+function inferInputFormat(file: File | null): string | null {
+  if (!file) return null;
+  const type = file.type?.toLowerCase() || '';
+  if (type.includes('jpeg')) return 'JPG';
+  if (type.includes('png')) return 'PNG';
+  if (type.includes('webp')) return 'WEBP';
+  const name = file.name?.toLowerCase() || '';
+  if (name.endsWith('.jpg') || name.endsWith('.jpeg')) return 'JPG';
+  if (name.endsWith('.png')) return 'PNG';
+  if (name.endsWith('.webp')) return 'WEBP';
+  return null;
+}
+
+export default function ImageConverter({
+  defaultFormat = 'webp',
+}: {
+  defaultFormat?: ConversionOptions['format'];
+}) {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
@@ -22,7 +39,7 @@ export default function ImageConverter() {
   const [progress, setProgress] = useState(0);
 
   const [options, setOptions] = useState<ConversionOptions>({
-    format: 'webp',
+    format: defaultFormat,
     dpi: 300,
     quality: 85,
   });
@@ -91,13 +108,36 @@ export default function ImageConverter() {
   return (
     <section aria-labelledby="converter-heading" className="space-y-4">
       <div className="text-center lg:text-left">
-        <h2 id="converter-heading" className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-          Picture converter
+        <h2
+          id="converter-heading"
+          className="font-display text-2xl font-bold text-foreground sm:text-3xl"
+        >
+          Image converter
         </h2>
         <p className="mt-2 max-w-2xl text-base leading-relaxed text-muted-foreground lg:mx-0 lg:max-w-none">
-          Upload one image, adjust the settings with the sliders and menus, then convert. Your file
-          stays on this page until you download it.
+          Choose an image, then convert it to WebP, PNG, or JPG. Everything stays in your browser
+          until you download.
         </p>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground lg:justify-start">
+          <span className="rounded-full border border-border bg-card px-3 py-1.5 shadow-sm">
+            {file ? (
+              <>
+                <span className="font-semibold text-foreground">
+                  {inferInputFormat(file) || 'Image'}
+                </span>{' '}
+                →{' '}
+                <span className="font-semibold text-foreground">{options.format.toUpperCase()}</span>
+              </>
+            ) : (
+              <>Select a file to see “From → To”</>
+            )}
+          </span>
+          {file?.name ? (
+            <span className="truncate rounded-full border border-border bg-card px-3 py-1.5 shadow-sm max-w-[min(520px,90vw)]">
+              <span className="font-medium text-foreground">File:</span> {file.name}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
@@ -110,9 +150,9 @@ export default function ImageConverter() {
             onClick={handleConvert}
             disabled={!file || loading}
             aria-busy={loading}
-            className="font-display h-14 w-full rounded-2xl text-lg font-semibold shadow-md sm:h-16 sm:text-xl"
+            className="font-display h-14 w-full rounded-2xl text-lg font-semibold shadow-md sm:h-16 sm:text-xl bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 text-white hover:from-sky-600 hover:via-indigo-600 hover:to-fuchsia-600"
           >
-            {loading ? 'Working on your picture…' : 'Convert picture'}
+            {loading ? 'Converting…' : `Convert to ${options.format.toUpperCase()}`}
           </Button>
 
           {loading && (

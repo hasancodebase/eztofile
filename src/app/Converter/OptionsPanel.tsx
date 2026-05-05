@@ -15,11 +15,29 @@ export function OptionsPanel({ options, setOptions }: Props) {
     <div className="glass space-y-10 rounded-3xl p-6 sm:p-8">
       <div>
         <Label className="font-display mb-2 block text-base font-semibold text-foreground">
-          What format should we save?
+          Convert to
         </Label>
-        <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
-          WebP is great for websites. PNG keeps sharp edges. JPEG is widely supported.
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+          Pick the new file type you want to download.
         </p>
+        <div className="mb-4 grid grid-cols-3 gap-2">
+          {(['webp', 'png', 'jpeg'] as const).map((fmt) => (
+            <button
+              key={fmt}
+              type="button"
+              onClick={() => setOptions({ ...options, format: fmt })}
+              className={[
+                'rounded-xl border px-3 py-3 text-sm font-semibold shadow-sm transition-colors',
+                'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/60',
+                options.format === fmt
+                  ? 'border-transparent bg-primary text-primary-foreground'
+                  : 'border-border bg-card text-foreground hover:bg-muted',
+              ].join(' ')}
+            >
+              {fmt.toUpperCase()}
+            </button>
+          ))}
+        </div>
         <Select
           value={options.format}
           onValueChange={(value) =>
