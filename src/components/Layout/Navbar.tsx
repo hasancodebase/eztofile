@@ -20,33 +20,40 @@ export default function Navbar() {
     setTheme(next);
   };
 
+  const themeLabel =
+    resolvedTheme === 'dark' ? 'Switch to light background' : 'Switch to dark background';
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-zinc-950/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/80 bg-background/90 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/75">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.25rem] sm:px-6">
         <Link
           href="/"
-          className="text-lg font-semibold tracking-tight text-white transition hover:text-purple-300"
+          className="font-display text-xl font-bold tracking-tight text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:text-2xl"
         >
           Eztofile
         </Link>
-        <nav className="flex items-center gap-2">
+        <p className="hidden max-w-[14rem] text-sm leading-snug text-muted-foreground sm:block md:max-w-xs">
+          Free tools for your files — private &amp; straightforward
+        </p>
+        <nav className="flex shrink-0 items-center gap-2" aria-label="Site">
           {mounted ? (
             <Button
               type="button"
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              size="icon-lg"
               onClick={toggle}
-              className="text-zinc-300 hover:bg-white/10 hover:text-white"
-              aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="size-11 rounded-xl border-border bg-card text-foreground shadow-sm hover:bg-muted"
+              aria-label={themeLabel}
+              title={themeLabel}
             >
               {resolvedTheme === 'dark' ? (
-                <Sun className="h-5 w-5" />
+                <Sun className="size-5" aria-hidden />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="size-5" aria-hidden />
               )}
             </Button>
           ) : (
-            <span className="inline-flex h-10 w-10 shrink-0" aria-hidden />
+            <span className="inline-flex size-11 shrink-0 rounded-xl border border-transparent" aria-hidden />
           )}
         </nav>
       </div>

@@ -9,6 +9,11 @@ import { Progress } from '@/components/ui/progress';
 import confetti from 'canvas-confetti';
 import type { ConversionOptions } from './converter-options';
 
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined') return true;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export default function ImageConverter() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -26,7 +31,7 @@ export default function ImageConverter() {
     setFile(selectedFile);
     const url = URL.createObjectURL(selectedFile);
     setPreviewUrl(url);
-    setResultUrl(null); // Reset previous result
+    setResultUrl(null);
   }, []);
 
   const handleConvert = async () => {
@@ -66,16 +71,16 @@ export default function ImageConverter() {
       setResultUrl(url);
       setProgress(100);
 
-      // Celebration effect
-      confetti({
-        particleCount: 150,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
-
+      if (!prefersReducedMotion()) {
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.65 },
+        });
+      }
     } catch (error: unknown) {
       console.error(error);
-      const message = error instanceof Error ? error.message : 'Failed to convert image. Please try again.';
+      const message = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
       alert(message);
     } finally {
       setLoading(false);
@@ -84,33 +89,47 @@ export default function ImageConverter() {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
-      {/* Left Side - Upload + Options */}
-      <div className="space-y-6">
-        <UploadZone onFileSelect={handleFileSelect} />
-
-        <OptionsPanel options={options} setOptions={setOptions} />
-
-        <Button 
-          onClick={handleConvert} 
-          disabled={!file || loading}
-          className="w-full h-14 text-lg font-medium bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50"
-        >
-          {loading ? 'Converting...' : 'Convert & Download'}
-        </Button>
-
-        {loading && (
-          <Progress value={progress} className="h-2" />
-        )}
+    <section aria-labelledby="converter-heading" className="space-y-4">
+      <div className="text-center lg:text-left">
+        <h2 id="converter-heading" className="font-display text-2xl font-bold text-foreground sm:text-3xl">
+          Picture converter
+        </h2>
+        <p className="mt-2 max-w-2xl text-base leading-relaxed text-muted-foreground lg:mx-0 lg:max-w-none">
+          Upload one image, adjust the settings with the sliders and menus, then convert. Your file
+          stays on this page until you download it.
+        </p>
       </div>
 
-      {/* Right Side - Preview */}
-      <PreviewPanel 
-        previewUrl={previewUrl} 
-        resultUrl={resultUrl} 
-        fileName={file?.name} 
-        options={options} 
-      />
-    </div>
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+        <div className="space-y-6">
+          <UploadZone onFileSelect={handleFileSelect} />
+
+          <OptionsPanel options={options} setOptions={setOptions} />
+
+          <Button
+            onClick={handleConvert}
+            disabled={!file || loading}
+            aria-busy={loading}
+            className="font-display h-14 w-full rounded-2xl text-lg font-semibold shadow-md sm:h-16 sm:text-xl"
+          >
+            {loading ? 'Working on your picture…' : 'Convert picture'}
+          </Button>
+
+          {loading && (
+            <div className="space-y-2">
+              <Progress value={progress} className="h-3 rounded-full md:h-3.5" />
+              <p className="text-center text-sm text-muted-foreground">This usually takes a few seconds.</p>
+            </div>
+          )}
+        </div>
+
+        <PreviewPanel
+          previewUrl={previewUrl}
+          resultUrl={resultUrl}
+          fileName={file?.name}
+          options={options}
+        />
+      </div>
+    </section>
   );
 }

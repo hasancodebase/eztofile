@@ -16,7 +16,7 @@ interface Props {
 export function PreviewPanel({ previewUrl, resultUrl, fileName, options }: Props) {
   const handleDownload = () => {
     if (!resultUrl) return;
-    
+
     const link = document.createElement('a');
     link.href = resultUrl;
     link.download = `eztofile-${fileName || 'converted'}.${options.format}`;
@@ -26,18 +26,23 @@ export function PreviewPanel({ previewUrl, resultUrl, fileName, options }: Props
   };
 
   return (
-    <div className="glass rounded-3xl p-8">
-      <h3 className="font-semibold text-lg mb-6">Live Preview</h3>
+    <div className="glass rounded-3xl p-6 sm:p-8">
+      <h3 className="font-display mb-2 text-xl font-bold text-foreground sm:text-2xl">Preview</h3>
+      <p className="mb-6 text-sm leading-relaxed text-muted-foreground sm:text-base">
+        Your original appears first. After converting, the new picture and a download button show up
+        below.
+      </p>
 
       <div className="space-y-10">
-        {/* Original Image */}
         <div>
-          <p className="uppercase text-xs tracking-widest text-zinc-500 mb-3">ORIGINAL IMAGE</p>
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Before
+          </p>
           {previewUrl ? (
-            <div className="relative min-h-[240px] w-full overflow-hidden rounded-2xl border border-white/10 shadow-xl">
+            <div className="relative min-h-[220px] w-full overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-inner">
               <Image
                 src={previewUrl}
-                alt="Original"
+                alt="Your uploaded picture"
                 width={1200}
                 height={900}
                 unoptimized
@@ -45,27 +50,29 @@ export function PreviewPanel({ previewUrl, resultUrl, fileName, options }: Props
               />
             </div>
           ) : (
-            <div className="h-80 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 border border-dashed border-white/20">
-              Upload an image to see preview
+            <div className="flex min-h-[220px] items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/20 px-4 text-center text-base text-muted-foreground">
+              When you add a picture, it will show here.
             </div>
           )}
         </div>
 
-        {/* Converted Image */}
         {resultUrl && (
           <div>
-            <div className="flex justify-between items-center mb-3">
-              <p className="uppercase text-xs tracking-widest text-emerald-400">CONVERTED RESULT</p>
-              <Button onClick={handleDownload} className="bg-emerald-600 hover:bg-emerald-500">
-                <Download className="mr-2 h-4 w-4" />
-                Download
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary">After</p>
+              <Button
+                onClick={handleDownload}
+                className="font-display h-12 w-full rounded-xl text-base font-semibold sm:h-14 sm:w-auto sm:px-8 sm:text-lg"
+              >
+                <Download className="mr-2 size-5" aria-hidden />
+                Download picture
               </Button>
             </div>
-            
-            <div className="relative min-h-[240px] w-full overflow-hidden rounded-2xl border border-white/10 shadow-xl">
+
+            <div className="relative min-h-[220px] w-full overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-inner">
               <Image
                 src={resultUrl}
-                alt="Converted"
+                alt="Converted picture"
                 width={1200}
                 height={900}
                 unoptimized
@@ -73,13 +80,17 @@ export function PreviewPanel({ previewUrl, resultUrl, fileName, options }: Props
               />
             </div>
 
-            <div className="mt-5 text-xs text-zinc-400 space-y-1 bg-black/40 p-4 rounded-2xl">
-              <p><strong>Format:</strong> {options.format.toUpperCase()}</p>
-              <p><strong>Quality:</strong> {options.quality}%</p>
+            <div className="mt-5 space-y-2 rounded-2xl border border-border bg-card/80 p-4 text-base leading-relaxed text-foreground shadow-sm sm:p-5">
+              <p>
+                <span className="font-semibold">Format:</span> {options.format.toUpperCase()}
+              </p>
+              <p>
+                <span className="font-semibold">Quality:</span> {options.quality}%
+              </p>
               {options.width && (
                 <p>
-                  <strong>Width:</strong> {options.width}px 
-                  ({pixelsToMm(options.width, options.dpi)} mm at {options.dpi} DPI)
+                  <span className="font-semibold">Width:</span> {options.width} pixels — about{' '}
+                  {pixelsToMm(options.width, options.dpi)}&nbsp;mm wide at {options.dpi}&nbsp;DPI
                 </p>
               )}
             </div>

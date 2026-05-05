@@ -12,76 +12,107 @@ interface Props {
 
 export function OptionsPanel({ options, setOptions }: Props) {
   return (
-    <div className="glass rounded-3xl p-8 mt-8 space-y-8">
-      {/* Output Format */}
+    <div className="glass space-y-10 rounded-3xl p-6 sm:p-8">
       <div>
-        <Label className="text-sm font-medium mb-2 block">Output Format</Label>
-        <Select 
-          value={options.format} 
+        <Label className="font-display mb-2 block text-base font-semibold text-foreground">
+          What format should we save?
+        </Label>
+        <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
+          WebP is great for websites. PNG keeps sharp edges. JPEG is widely supported.
+        </p>
+        <Select
+          value={options.format}
           onValueChange={(value) =>
             setOptions({ ...options, format: value as ConversionOptions['format'] })
           }
         >
-          <SelectTrigger className="bg-zinc-900">
+          <SelectTrigger className="h-auto min-h-12 w-full rounded-xl border-border bg-card py-3 text-base shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="webp">WebP (Best for web - smaller size)</SelectItem>
-            <SelectItem value="png">PNG (High quality)</SelectItem>
-            <SelectItem value="jpeg">JPEG</SelectItem>
+            <SelectItem value="webp" className="text-base">
+              WebP — smaller files, good for the web
+            </SelectItem>
+            <SelectItem value="png" className="text-base">
+              PNG — crisp graphics and screenshots
+            </SelectItem>
+            <SelectItem value="jpeg" className="text-base">
+              JPEG — classic photos, wide compatibility
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Width Resize */}
       <div>
-        <Label className="text-sm font-medium mb-3 block">
-          Width (pixels) - Leave empty for original size
+        <Label className="font-display mb-2 block text-base font-semibold text-foreground">
+          How wide should the picture be?
         </Label>
-        <Slider 
-          value={[options.width || 0]} 
-          onValueChange={([value]) => setOptions({ 
-            ...options, 
-            width: value > 0 ? value : undefined 
-          })}
-          max={4000} 
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+          Leave the slider at the start to keep the original width. Move it right to shrink — handy
+          for email or faster loading pages.
+        </p>
+        <Slider
+          value={[options.width || 0]}
+          onValueChange={([value]) =>
+            setOptions({
+              ...options,
+              width: value > 0 ? value : undefined,
+            })
+          }
+          max={4000}
           step={10}
-          className="mb-2"
+          className="mb-3 py-1"
         />
-        <div className="flex justify-between text-xs text-zinc-400">
-          <span>Original</span>
-          <span>{options.width ? `${options.width}px` : ''}</span>
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <span>Original size</span>
+          <span className="font-medium text-foreground">
+            {options.width ? `${options.width} pixels wide` : 'Not changing width'}
+          </span>
         </div>
       </div>
 
-      {/* DPI Selector */}
       <div>
-        <Label className="text-sm font-medium mb-2 block">DPI (for mm conversion)</Label>
-        <Select 
-          value={options.dpi.toString()} 
-          onValueChange={(v) => setOptions({ ...options, dpi: parseInt(v) })}
+        <Label className="font-display mb-2 block text-base font-semibold text-foreground">
+          Print detail (DPI)
+        </Label>
+        <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
+          This helps show width in millimetres in the preview. 300 is a safe choice for home
+          printing; 72 is typical for screens.
+        </p>
+        <Select
+          value={options.dpi.toString()}
+          onValueChange={(v) => setOptions({ ...options, dpi: parseInt(v, 10) })}
         >
-          <SelectTrigger className="bg-zinc-900">
+          <SelectTrigger className="h-auto min-h-12 w-full rounded-xl border-border bg-card py-3 text-base shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="72">72 DPI (Screen/Web)</SelectItem>
-            <SelectItem value="150">150 DPI (Standard Print)</SelectItem>
-            <SelectItem value="300">300 DPI (High Quality Print)</SelectItem>
+            <SelectItem value="72" className="text-base">
+              72 — phones and computer screens
+            </SelectItem>
+            <SelectItem value="150" className="text-base">
+              150 — everyday printing
+            </SelectItem>
+            <SelectItem value="300" className="text-base">
+              300 — sharp photos and documents
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Quality Slider */}
       <div>
-        <Label className="text-sm font-medium mb-3 block">
+        <Label className="font-display mb-2 block text-base font-semibold text-foreground">
           Quality: {options.quality}%
         </Label>
-        <Slider 
-          value={[options.quality]} 
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+          Higher keeps more detail and a larger file. Lower saves space — fine for small previews.
+        </p>
+        <Slider
+          value={[options.quality]}
           onValueChange={([q]) => setOptions({ ...options, quality: q })}
-          max={100} 
+          max={100}
           step={5}
+          className="py-1"
         />
       </div>
     </div>
